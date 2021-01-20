@@ -32,7 +32,7 @@ def setRandomPoints():
         # Create text curve obj and set location
         textData=bpy.data.curves.new(type="FONT",name=i)
         textData.body=i
-        textData.extrude=2
+        textData.extrude=.1
         textObj = bpy.data.objects.new(i, bpy.data.curves[i])
         textObj.location=(X,Y,Z)
         
@@ -51,11 +51,11 @@ def makeConnection(prompt1, prompt2):
     # Creating links between nodes
 
     # Creating curve data block
-    curveData = bpy.data.curves.new('linkLine', type='POLY')
+    curveData = bpy.data.curves.new('linkLine', type='CURVE')
     curveData.dimensions = '3D'
     curveData.fill_mode="FULL"
-    curveData.extrude=0.20
-    curveData.bevel_depth = 0.2
+    curveData.extrude=0.4
+    curveData.bevel_depth = 0.9
 
     # Smoothness of the segments on the curve.
     curveData.resolution_u = 20
@@ -63,7 +63,7 @@ def makeConnection(prompt1, prompt2):
     curveData.resolution_u = 2
     
     # Map coords to spline
-    polyLine = curveData.splines.new('CURVE')
+    polyLine = curveData.splines.new('POLY')
     
     # Determine number of random jumps between nodes
     randomJumps=random.randint(1,16)
@@ -81,33 +81,33 @@ def makeConnection(prompt1, prompt2):
         polyLine.points[i].co = (x, y, z, 1)
         
     # Create Object
-    linkLine = bpy.data.objects.new('linkLine', curveData)
+    linkLineName="Linking" + prompt1 + prompt2
+    linkLine = bpy.data.objects.new(linkLineName, curveData)
+
     
-    # Creating a group
-    groupName = "Linking" + prompt1 + prompt2
-    group = bpy.data.collections.new(groupName)
-    group.objects.link(linkLine)
-    group.objects.link(nodCol.objects[prompt1])
-    group.objects.link(nodCol.objects[prompt2])
-    bpy.context.scene.collection.children.link(group)
+    
+    # # Creating a group
+    # groupName = "Linking" + prompt1 + prompt2
+    # group = bpy.data.collections.new(groupName)
+    # group.objects.link(linkLine)
+    # group.objects.link(nodCol.objects[prompt1])
+    # group.objects.link(nodCol.objects[prompt2])
+    # bpy.context.scene.collection.children.link(group)
     
     
     # Link to collection
+    setNodeLineColour(linkLine)
     linkCol.objects.link(linkLine)
     bpy.context.view_layer.update()
-    
-    
-#def setNodeLineColour():
-#    mat = bpy.data.materials.new(name='Material')
-#    # Assign a diffuse color to the material.
-#        mat.diffuse_color = (random.randint(1,90), random.randint(1,90), random.randint(1,90), random.randint(1,90))
-#        i.objects.material.append("material")    
-#function calls
+
+def setNodeLineColour(line):
+    # current = bpy.context.object
+    mat = bpy.data.materials.new(name='Material')
+    # Assign a diffuse color to the material.
+    mat.diffuse_color = (random.randint(1,90), random.randint(1,20), random.randint(1,20), random.randint(1,90))
+    mat.specular_intensity=0.1
+    line.data.materials.append(mat)    
+
+# Function calls
 setRandomPoints()
 makeConnection("test1","test2")
-#setNodeLineColour()
-#        # Scale the curve while in edit mode.
-#        ops.transform.resize(value=(2.0, 2.0, 3.0))
-#        
-#        # Return to object mode.
-#        ops.object.mode_set(mode='OBJECT')

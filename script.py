@@ -2,7 +2,7 @@ import random
 import bpy
 
 # Create list of nodes
-nodeList = ["test1", "test2", "Sample random"]
+nodeList = ["farmer1", "farmer2", "Government Policy", "Insurance Companies", "Rice Mills", "FCI", "New Laws","Informal Credit", "Auctioneers","Small scale vendors", "Supermarkets", "Logistics", "End Consumers", "Zonal Markets", "Human Development Index","End Consumer"]
 print(nodeList)
 
 # Create collections to hold nodes and links
@@ -25,23 +25,25 @@ def setRandomPoints():
         print(i)
         
         # Get random coordinates
-        Z=random.randint(0,60)
-        Y=random.randint(0,60)
-        X=random.randint(0,60) 
+        X=random.randint(0,200)
+        Y=random.randint(0,400)
+        Z=random.randint(0,100) 
         
         # Create text curve obj and set location
         textData=bpy.data.curves.new(type="FONT",name=i)
         textData.body=i
         textData.extrude=.1
+        textData.size=20
         textObj = bpy.data.objects.new(i, bpy.data.curves[i])
         textObj.location=(X,Y,Z)
+        #textObj.transform.translate( orient_type='GLOBAL', orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)), orient_matrix_type='GLOBAL')
+
         
               
-        # Link to node collection        
+        # Link to node collection
+        setTextNodeColour(textObj)        
         nodCol.objects.link(textObj)
-        bpy.context.view_layer.update()
-        
-        
+        bpy.context.view_layer.update()    
 
 def makeConnection(prompt1, prompt2):
     # Get vector coordinates of two nodes
@@ -66,7 +68,7 @@ def makeConnection(prompt1, prompt2):
     polyLine = curveData.splines.new('POLY')
     
     # Determine number of random jumps between nodes
-    randomJumps=random.randint(1,16)
+    randomJumps=random.randint(1,5)
     polyLine.points.add(randomJumps-1)
     for i in range(0,randomJumps):
         if i==0:
@@ -74,9 +76,9 @@ def makeConnection(prompt1, prompt2):
         elif i==randomJumps-1:
             x,y,z = nodeTwoLocation
         else:
-            z=random.randint(0,60)
-            y=random.randint(0,60)
-            x=random.randint(0,60) 
+            x=random.randint(0,200)
+            y=random.randint(0,400)
+            z=random.randint(0,100) 
 
         polyLine.points[i].co = (x, y, z, 1)
         
@@ -104,10 +106,46 @@ def setNodeLineColour(line):
     # current = bpy.context.object
     mat = bpy.data.materials.new(name='Material')
     # Assign a diffuse color to the material.
-    mat.diffuse_color = (random.randint(1,90), random.randint(1,20), random.randint(1,20), random.randint(1,90))
+    mat.diffuse_color = (random.randint(1,90), random.randint(1,100), random.randint(1,20), random.randint(1,20))
     mat.specular_intensity=0.1
     line.data.materials.append(mat)    
 
+def setTextNodeColour(textNode):
+    # current = bpy.context.object
+    mat = bpy.data.materials.new(name='Material')
+    # Assign a diffuse color to the material.
+    mat.diffuse_color = (50,50,50, random.randint(1,20))
+    mat.specular_intensity=0.1
+    textNode.data.materials.append(mat)
+
 # Function calls
 setRandomPoints()
-makeConnection("test1","test2")
+# "farmer1", "farmer2", "Government Policy", "Insurance Companies", "Rice Mills", "FCI", "New Laws","Informal Credit", "Auctioneers","Small scale vendors", "Supermarkets", "Logistics", "End Consumers", "Zonal Markets", "Human Development Index","End Consumer"
+makeConnection("farmer1","farmer2")
+makeConnection("farmer1","Government Policy")
+makeConnection("Insurance Companies", "Rice Mills")
+makeConnection("FCI","farmer1")
+makeConnection("Government Policy","Insurance Companies")
+makeConnection("Government Policy","Informal Credit")
+makeConnection("Supermarkets","End Consumers")
+makeConnection("Human Development Index","farmer1")
+makeConnection("Human Development Index","farmer2")
+makeConnection("Human Development Index","Government Policy")
+makeConnection("Human Development Index","Insurance Companies")
+makeConnection("Human Development Index","Informal Credit")
+makeConnection("Human Development Index","Small scale vendors")
+makeConnection("Human Development Index","End Consumers")
+makeConnection("Human Development Index","New Laws")
+makeConnection("Small scale vendors","Government Policy")
+makeConnection("Rice Mills","Supermarkets")
+makeConnection("New Laws","farmer2")
+makeConnection("Logistics","Rice Mills")
+makeConnection("Logistics","farmer1")
+makeConnection("Logistics","FCI")
+makeConnection("Logistics","Zonal Markets")
+makeConnection("Logistics","Supermarkets")
+makeConnection("Logistics","Small scale vendors")
+makeConnection("Logistics","farmer2")
+makeConnection("Informal Credit", "farmer1")
+makeConnection("Informal Credit","farmer2")
+makeConnection("Informal Credit","End Consumers")
